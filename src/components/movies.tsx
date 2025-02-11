@@ -1,42 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 import ImageGrid from './images-grid';
+import { useMovies } from '../hooks/useMovies';
 
 export default function MovieList() {
-  const [movies, setMovies] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: movies, isLoading, isError, error } = useMovies();
 
-  useEffect(() => {
-    async function fetchMovies() {
-      try {
-        const response = await axios.get('/api/movies');
-        setMovies(response.data.results);
-      } catch (error: any) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchMovies();
-  }, []);
-
-  if (loading)
-    return (
-      <div>
-        <p>Carregando...</p>
-      </div>
-    );
-
-  if (error)
-    return (
-      <div>
-        <p>Erro: {error}</p>
-      </div>
-    );
+  if (isLoading) return <p>Carregando...</p>;
+  if (isError) return <p>Erro: {error.message}</p>;
 
   return (
     <div>
