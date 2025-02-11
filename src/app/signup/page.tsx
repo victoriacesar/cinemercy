@@ -6,6 +6,8 @@ import MovieList from '@/components/components/movies';
 import { ArrowLeftIcon } from '@heroicons/react/16/solid';
 import Link from 'next/link';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 
 const signUpSchema = z.object({
   name: z.string().min(2, 'Name must contain at least 3 characters.'),
@@ -52,8 +54,20 @@ export default function SignUp() {
     resolver: zodResolver(signUpSchema),
   });
 
+  const mutation = useMutation({
+    mutationFn: (data: SignUpFormData) => {
+      return axios.post('/api/auth', data);
+    },
+    onSuccess: () => {
+      console.log('User created');
+    },
+    onError: (error: any) => {
+      console.error('Error to create user', error);
+    },
+  });
+
   const onSubmit: SubmitHandler<SignUpFormData> = (data) => {
-    console.log(data);
+    mutation.mutate(data);
   };
 
   return (
@@ -99,7 +113,7 @@ export default function SignUp() {
             </button>
             <Link className="flex gap-1 items-center hover:underline" href="/">
               <ArrowLeftIcon className="size-4 text-slate-600" />
-              <p className="text-sm text-slate-600 font-bold">Voltar</p>
+              <p className="text-sm text-slate-600 font-bold">Back</p>
             </Link>
           </form>
         </div>
